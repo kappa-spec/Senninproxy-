@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Proxy Search</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .container { text-align: center; }
+        h1 { font-size: 3rem; margin-bottom: 20px; background: linear-gradient(90deg, #ff00cc, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        input { width: 500px; padding: 15px 25px; border-radius: 30px; border: 2px solid #333; background: #1a1a1a; color: white; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: #ff00cc; box-shadow: 0 0 15px rgba(255, 0, 204, 0.3); }
+        .desc { margin-top: 15px; color: #888; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ultraviolet</h1>
+        <form id="uv-form">
+            <input id="uv-address" type="text" placeholder="URLを入力、またはキーワード検索..." autocomplete="off">
+        </form>
+        <p class="desc">Enter a URL or search the web securely.</p>
+    </div>
+
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+    <script>
+        const form = document.querySelector('#uv-form');
+        const address = document.querySelector('#uv-address');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Service Workerの登録（サイトを壊さないための必須工程）
+            await navigator.serviceWorker.register('/uv.sw.js', {
+                scope: __uv$config.prefix
+            });
+
+            let url = address.value.trim();
+            
+            // 検索・URL判別ロジック
+            if (!isUrl(url)) {
+                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
+                url = 'http://' + url;
+            }
+
+            // プロキシ経由で移動
+            window.location.href = __uv$config.prefix + __uv$config.encodeUrl(url);
+        });
+
+        function isUrl(val = '') {
+            if (/^http(s?):\/\//.test(val) || val.includes('.') && val.substr(0, 1) !== ' ') return true;
+            return false;
+        }
+    </script>
+</body>
+</html>
+
