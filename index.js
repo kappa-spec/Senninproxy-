@@ -15,9 +15,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Ultravioletライブラリの配信
+// 静的ファイルの配信
 app.use('/uv/', express.static(uvPath));
-// フロントエンドファイルの配信
 app.use(express.static(path.join(rootDir, "public")));
 
 // 検索エンジンの自動判別・フォールバック
@@ -47,7 +46,7 @@ app.get("/api/search", async (req, res) => {
       });
       clearTimeout(timer);
       if (r.ok) return res.json({ url });
-    } catch (e) { /* ignore and try next */ }
+    } catch (e) { /* fail -> next */ }
   }
   return res.status(502).json({ error: "no search engine available" });
 });
@@ -69,7 +68,7 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`SenninProxy Active on ${PORT}`);
+  console.log(`SenninProxy Listening on ${PORT}`);
 });
 
 process.on("SIGINT", shutdown);
