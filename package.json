@@ -1,0 +1,13 @@
+{
+  "name": "uv-search-proxy",
+  "version": "1.0.0",
+  "description": "High-quality Ultraviolet Proxy with Search functionality",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.3",
+    "express": "^4.18.2"
+  }
+}
